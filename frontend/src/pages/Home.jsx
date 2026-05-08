@@ -1,14 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState
+} from "react";
+
 import axios from "axios";
 
+import {
+  useNavigate
+} from "react-router-dom";
+
 import Navbar from "../components/Navbar";
+
 import Footer from "../components/Footer";
+
 import BlogCard from "../components/BlogCard";
+
 import Loader from "../components/Loader";
 
 const Home = () => {
 
+  const navigate = useNavigate();
+
   const [blogs, setBlogs] = useState([]);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,7 +38,9 @@ const Home = () => {
         setBlogs(res.data);
 
       } catch (error) {
+
         console.log(error);
+
       }
 
       setLoading(false);
@@ -51,7 +67,12 @@ const Home = () => {
             Create beautiful blogs and connect with readers globally.
           </p>
 
-          <button className="bg-white text-black px-8 py-4 rounded-xl font-semibold">
+          <button
+            onClick={() =>
+              navigate("/create-blog")
+            }
+            className="bg-white text-black px-8 py-4 rounded-xl font-semibold"
+          >
             Start Writing
           </button>
 
@@ -63,20 +84,26 @@ const Home = () => {
 
         {
           loading ? (
+
             <Loader />
+
           ) : (
+
             <div className="grid md:grid-cols-3 gap-8">
 
               {
                 blogs.map((blog) => (
+
                   <BlogCard
                     key={blog._id}
                     blog={blog}
                   />
+
                 ))
               }
 
             </div>
+
           )
         }
 

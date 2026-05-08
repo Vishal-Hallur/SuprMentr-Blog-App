@@ -1,10 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState
+} from "react";
 
 import axios from "axios";
+
+import {
+  useNavigate
+} from "react-router-dom";
 
 import Navbar from "../components/Navbar";
 
 const Dashboard = () => {
+
+  const navigate = useNavigate();
 
   const [blogs, setBlogs] = useState([]);
 
@@ -30,6 +39,35 @@ const Dashboard = () => {
     fetchBlogs();
 
   }, []);
+
+  const handleDelete = async (id) => {
+
+    try {
+
+      await axios.delete(
+        `http://localhost:5000/api/blogs/${id}`,
+        {
+          headers: {
+            Authorization:
+              localStorage.getItem("token")
+          }
+        }
+      );
+
+      setBlogs(
+        blogs.filter(
+          (blog) => blog._id !== id
+        )
+      );
+
+      alert("Blog Deleted");
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+  };
 
   return (
     <>
@@ -61,11 +99,23 @@ const Dashboard = () => {
 
                 <div className="flex gap-4 mt-4">
 
-                  <button className="bg-blue-500 text-white px-5 py-2 rounded-lg">
+                  <button
+                    onClick={() =>
+                      navigate(
+                        `/edit-blog/${blog._id}`
+                      )
+                    }
+                    className="bg-blue-500 text-white px-5 py-2 rounded-lg"
+                  >
                     Edit
                   </button>
 
-                  <button className="bg-red-500 text-white px-5 py-2 rounded-lg">
+                  <button
+                    onClick={() =>
+                      handleDelete(blog._id)
+                    }
+                    className="bg-red-500 text-white px-5 py-2 rounded-lg"
+                  >
                     Delete
                   </button>
 

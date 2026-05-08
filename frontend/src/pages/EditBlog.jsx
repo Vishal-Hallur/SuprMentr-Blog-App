@@ -1,8 +1,92 @@
-import React from "react";
+import React, {
+  useEffect,
+  useState
+} from "react";
+
+import axios from "axios";
+
+import {
+  useParams,
+  useNavigate
+} from "react-router-dom";
 
 import Navbar from "../components/Navbar";
 
 const EditBlog = () => {
+
+  const { id } = useParams();
+
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    title: "",
+    category: "",
+    content: ""
+  });
+
+  useEffect(() => {
+
+    const fetchBlog = async () => {
+
+      try {
+
+        const res = await axios.get(
+          `http://localhost:5000/api/blogs/${id}`
+        );
+
+        setFormData({
+          title: res.data.title,
+          category: res.data.category,
+          content: res.data.content
+        });
+
+      } catch (error) {
+
+        console.log(error);
+
+      }
+    };
+
+    fetchBlog();
+
+  }, [id]);
+
+  const handleChange = (e) => {
+
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+
+  };
+
+  const handleSubmit = async (e) => {
+
+    e.preventDefault();
+
+    try {
+
+      await axios.put(
+        `http://localhost:5000/api/blogs/${id}`,
+        formData,
+        {
+          headers: {
+            Authorization:
+              localStorage.getItem("token")
+          }
+        }
+      );
+
+      alert("Blog Updated Successfully");
+
+      navigate("/dashboard");
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+  };
 
   return (
     <>
@@ -16,26 +100,41 @@ const EditBlog = () => {
             Edit Blog
           </h1>
 
-          <input
-            type="text"
-            placeholder="Blog Title"
-            className="w-full border p-4 rounded-xl mb-5"
-          />
+          <form onSubmit={handleSubmit}>
 
-          <input
-            type="text"
-            placeholder="Category"
-            className="w-full border p-4 rounded-xl mb-5"
-          />
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
+              placeholder="Blog Title"
+              className="w-full border p-4 rounded-xl mb-5"
+              onChange={handleChange}
+            />
 
-          <textarea
-            placeholder="Update your content..."
-            className="w-full border p-4 rounded-xl h-72 mb-5"
-          />
+            <input
+              type="text"
+              name="category"
+              value={formData.category}
+              placeholder="Category"
+              className="w-full border p-4 rounded-xl mb-5"
+              onChange={handleChange}
+            />
 
-          <button className="bg-black text-white px-8 py-4 rounded-xl">
-            Update Blog
-          </button>
+            <textarea
+              name="content"
+              value={formData.content}
+              placeholder="Update your content..."
+              className="w-full border p-4 rounded-xl h-72 mb-5"
+              onChange={handleChange}
+            />
+
+            <button className="bg-black text-white px-8 py-4 rounded-xl">
+
+              Update Blog
+
+            </button>
+
+          </form>
 
         </div>
 
